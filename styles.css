@@ -1,0 +1,81 @@
+.upload-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.upload-modal-content {
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    color: white;
+    position: relative;
+    text-align: center;
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    background: #dc3545;
+    padding: 5px;
+    border-radius: 50%;
+    color: white;
+}
+
+.upload-area {
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 15px 0;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.upload-area.dragover {
+    background-color: #333;
+}
+
+.upload-area.file-selected {
+    background-color: #333;
+    border-color: #007bff;
+}
+
+textarea {
+    width: 100%;
+    height: 80px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    padding: 10px;
+    background: #2e2e2e;
+    color: white;
+    border: none;
+    resize: none;
+}
+
+.modal-buttons button {
+    margin: 0 10px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+#postButton {
+    background: #28a745;
+    color: white;
+}
+
+#cancelButton {
+    background: #dc3545;
+    color: white;
+}

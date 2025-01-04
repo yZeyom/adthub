@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adamantina Hub 1.0</title>
+    <style>
+         body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: #0b0b0b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 10px 20px;
+            background-color: #242424;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .header-buttons {
+            display: flex;
+            margin-left: 20px;
+             }
+
+        .header-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            margin-left: 10px;
+             }
+             .header-btn:hover {
+        text-decoration: underline;
+        background: none;
+        color: white;
+    }
+
+            .app-content {
+            max-height: 80vh;
+            overflow-y: auto;
+            margin-top: 60px;
+            padding-bottom: 20px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background-color: #1e1e1e;
+            border-radius: 8px;
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            color: white;
+        }
+        .upload-area {
+            border: 2px dashed #555;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        .upload-area.dragover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .description {
+            width: 100%;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            background-color: #333;
+            color: white;
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        .modal-buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-cancel {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-post {
+            background-color: #28a745;
+            color: white;
+        }
+        .post {
+            background-color: #1e1e1e;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            color: white;
+        }
+        .post img, .post video {
+            width: 100%;
+            border-radius: 8px;
+        }
+        .post .description {
+            margin-top: 10px;
+        }
+        .like-button {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: transparent;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .container {
+            width: 300px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: rgb(19, 19, 19);
+            text-align: center;
+            display: none;
+        }
+        .container.active {
+            display: block;
+        }
+        h1 {
+            color: white;
+            margin-bottom: 20px;
+        }
+        input, button {
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #218838;
+        }
+        .error {
+            color: red;
+            font-size: 14px;
+        }
+        p {
+            color: white;
+        }
+        p span {
+            color: #007bff;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .app-content {
+            display: none;
+        }
+        .app-content.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 60px;
+        }
+        .chat-button, .post-button {
+            width: 52px;
+            height: 54px;
+            border-radius: 50%;
+            background-color: #007bff;
+            color: rgb(255, 255, 255);
+            font-size: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            cursor: pointer;
+        }
+        .chat-button {
+            bottom: 100px;
+            right: 20px;
+        }
+        .chat-modal {
+            display: none;
+            position: fixed;
+            bottom: 120px;
+            right: 20px;
+            width: 300px;
+            background: #1e1e1e;
+            border-radius: 10px;
+            padding: 15px;
+            color: white;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .chat-modal.active {
+            display: block;
+        }
+        .chat-messages {
+            height: 150px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #333;
+            border-radius: 10px;
+        }
+        .chat-input {
+            display: flex;
+            align-items: center;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 10px 0 0 10px;
+        }
+        .chat-input button {
+            padding: 8px;
+            background: #007bff;
+            color: white;
+            border-radius: 0 10px 10px 0;
+            font-size: 16px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .close-chat {
+            background: #dc354600;
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+    .chat-messages {
+        height: 300px; 
+        overflow-y: auto;
+        margin-bottom: 10px;
+        padding: 10px;
+        background: #1e1e1e;
+        border-radius: 10px;
+    }
+
+    .chat-message {
+        max-width: 70%;
+        padding: 10px 15px;
+        margin: 5px 0;
+        border-radius: 15px;
+        font-size: 14px;
+        line-height: 1.4;
+        word-wrap: break-word;
+    }
+    .chat-message.user {
+        background-color: #007bff;
+        color: white;
+        align-self: flex-end;
+        text-align: right;
+    }
+    .chat-message.system {
+        background-color: white;
+        color: black;
+        align-self: flex-start;
+        text-align: left;
+    }
+
+    .chat-messages {
+        display: flex;
+        flex-direction: column;
+    }
+    .app-content {
+        margin-top: 60px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: white;
+    }
+    .post-button {
+        width: 52px;
+        height: 54px;
+        border-radius: 50%;
+        background-color: #333;
+        color: white;
+        font-size: 25px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+
+        cursor: pointer;
+     }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background-color: #1e1e1e;
+            border-radius: 8px;
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            color: white;
+        }
+        .upload-area {
+            border: 2px dashed #555;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        .upload-area.dragover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .description {
+            width: 100%;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            background-color: #333;
+            color: white;
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        .modal-buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-cancel {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-post {
+            background-color: #28a745;
+            color: white;
+        }
+        .post {
+            background-color: #1e1e1e;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            color: white;
+        }
+        .post img, .post video {
+            width: 100%;
+            border-radius: 8px;
+        }
+        .post .description {
+            margin-top: 10px;
+        }
+        .post-button, .like-button {
+            position: fixed;
+            bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            font-size: 24px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .like-button {
+            right: 90px;
+        }
+
+        .like-button.active {
+            background: #ff4d4d;
+        }
+        .no-posts {
+          display: none;
+          text-align: center;
+          color: #888;
+          font-size: 18px;
+       }   
+       .app-content .post {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin: 10px 0;
+    }
+
+    .app-content .post img,
+    .app-content .post video {
+        max-width: 100%;
+        border-radius: 5px;
+    }
+
+    .app-content .post .description {
+        margin: 5px 0;
+        font-size: 14px;
+    }
+
+    .app-content .post .post-actions {
+        display: flex;
+        align-items: center;
+        margin-top: 5px;
+    }
+
+    .app-content .post .post-actions button {
+        margin-right: 10px;
+        padding: 5px 10px;
+        border: none;
+        background-color: #f5f5f5;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+    }
+
+    .app-content .post .post-actions button:hover {
+        background-color: #e0e0e0;
+    }
+
+    .no-posts {
+        display: none;
+        text-align: center;
+        color: #ffffff;
+        font-size: 28px;
+    }
+
+    .app-content.active .no-posts {
+        display: block;
+    }
+    .error-page {
+    display: none;
+    text-align: center;
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 500px;
+    border-radius: 5px;
+    }
+    .error-page h1 {
+        font-size: 48px;
+        margin-bottom: 20px;
+    }
+
+    .error-page a {
+        color: #6cb3ff;
+        text-decoration: none;
+    }
+
+    .error-page a:hover {
+        text-decoration: underline;
+    }
+    .banned-screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: transparent;
+    color: #721c24;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    }
+
+    .banned-screen h1 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .banned-screen p {
+        font-size: 1.2rem;
+        max-width: 80%;
+    }
+    .admin-actions button {
+    background-color: transparent;
+    border: 1px solid #ff0000;
+    color: #ff0000;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    }
+
+    .admin-actions button:hover {
+        background-color: rgba(255, 0, 0, 0.1); 
+        color: #ff0000; 
+    }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        Adamantina Hub
+        <div class="header-buttons">
+            <button class="header-btn" onclick="goToHome()">Início</button>
+            <button class="header-btn" onclick="showErrorPage()">Conversas</button>
+        </div>
+    </div>
+
+    <!-- Error Page -->
+    <div id="errorPage" class="error-page">
+        <h1>Erro 404</h1>
+        <p>Está página não existe! <a href="#" onclick="goToHome()">Clique aqui</a> para retornar ao início.</p>
+
+    </div>
+
+    <!-- Ban Page -->
+    <div id="bannedScreen" class="banned-screen" style="display: none;">
+        <h1>Oops! A sua conta está suspensa.</h1>
+        <p>Sua conta foi banida por violar os termos de uso. Para mais informações, entre em contato com o suporte.</p>
+    </div>   
+
+    <!-- Login -->
+    <div class="container active" id="loginContainer">
+        <h1>Login</h1>
+        <input type="text" id="loginUsername" placeholder="Usuário">
+        <input type="password" id="loginPassword" placeholder="Senha">
+        <button onclick="login()">Entrar</button>
+        <p>Não tem conta? <span onclick="toggleRegister()">Registre-se</span></p>
+        <p class="error" id="loginError"></p>
+    </div>
+
+    <!-- Registro -->
+    <div class="container" id="registerContainer">
+        <h1>Registrar</h1>
+        <input type="text" id="regUsername" placeholder="Usuário">
+        <input type="password" id="regPassword" placeholder="Senha">
+        <input type="password" id="confirmPassword" placeholder="Confirme a senha">
+        <button onclick="register()">Registrar</button>
+        <p>Já tem conta? <span onclick="toggleLogin()">Faça login.</span></p>
+        <p class="error" id="registerError"></p>
+    </div>
+
+    <!-- App -->
+    <div class="app-content" id="appContent">
+        <div class="chat-button" onclick="toggleChat()">💬</div>
+        <div class="post-button" onclick="openPostModal()">+</div>
+        <h1 class="no-posts">Oops! Ninguém postou nada.</h1>
+    </div>
+
+    <!-- Upload -->
+    <div class="post-button" onclick="openPostModal()">+</div>
+
+    <div class="modal" id="postModal">
+        <div class="modal-content">
+            <h2>Faça uma postagem</h2>
+            <div 
+                class="upload-area" 
+                id="uploadArea" 
+                onclick="triggerFileInput()" 
+                ondrop="handleFileDrop(event)" 
+                ondragover="handleDragOver(event)"
+                ondragleave="handleDragLeave(event)">
+                Clique ou arraste o arquivo aqui para fazer upload.
+            </div>
+            <input type="file" id="fileInput" style="display: none;" onchange="handleFileSelect(event)">
+            <textarea class="description" id="postDescription" placeholder="Adicione uma descrição..."></textarea>
+            <div class="modal-buttons">
+                <button class="btn-cancel" onclick="closePostModal()">Cancelar</button>
+                <button class="btn-post" onclick="submitPost()">Postar</button>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <!-- Chat Modal -->
+    <div class="chat-modal" id="chatModal">
+        <div class="close-chat" onclick="toggleChat()">X</div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="chat-message system">Edna: Olá! Me chamo Edna. Descreva seu problema/dúvida.</div>
+        </div>        
+        <div class="chat-input">
+            <input type="text" id="chatInput" placeholder="Digite sua mensagem...">
+            <button onclick="sendChat()">📨</button>
+        </div>
+    </div>
+
+    <script>
+        const loginContainer = document.getElementById('loginContainer');
+        const registerContainer = document.getElementById('registerContainer');
+        const appContent = document.getElementById('appContent');
+        const chatModal = document.getElementById('chatModal');
+        const chatMessages = document.getElementById('chatMessages');
+        const loginError = document.getElementById('loginError');
+    
+        // Staff
+        const users = [
+            { username: "admin", password: "admin",banned: false },
+            { username: "Tester", password: "12345678", banned: false },
+        ];
+    
+        // Palavras-chave e respostas
+        const keywords = {
+            "denúncia": "Edna: Se você deseja fazer uma denúncia, acesse nosso portal de denúncias em: https://adamantinahub.com.br/denuncias/. Caso se trate de uma postagem, você pode denunciar o usuário clicando nos '...' e em 'Denunciar Postagem'.",
+            "denuncia": "Edna: Se você deseja fazer uma denúncia, acesse nosso portal de denúncias em: https://adamantinahub.com.br/denuncias/. Caso se trate de uma postagem, você pode denunciar o usuário clicando nos '...' e em 'Denunciar Postagem'.",
+            "suporte técnico": "Edna: Para suporte técnico, acesse o manual em: https://adamantinahub.com.br/suporte-tecnico.",
+            "suporte tecnico": "Edna: Para suporte técnico, acesse o manual em: https://adamantinahub.com.br/suporte-tecnico.",
+            "reclamação": "Edna: Você pode registrar uma reclamação diretamente pelo e-mail: adamantinahub@gmail.com",
+            "reclamaçao": "Edna: Você pode registrar uma reclamação diretamente pelo e-mail: adamantinahub@gmail.com"
+        };
+        
+        let loggedInUser = null;
+
+        function showErrorPage() {
+            const appContent = document.getElementById('appContent');
+            appContent.style.display = 'none';
+            const errorPage = document.getElementById('errorPage');
+            errorPage.style.display = 'block';
+        }
+
+        function goToHome() {
+            const appContent = document.getElementById('appContent');
+            appContent.style.display = 'block';
+            const errorPage = document.getElementById('errorPage');
+            errorPage.style.display = 'none';
+        }
+                
+        function openPostModal() {
+            postModal.classList.add('active');
+        }
+
+        function closePostModal() {
+            postModal.classList.remove('active');
+            resetModal();
+        }
+
+        function triggerFileInput() {
+            document.getElementById('fileInput').click();
+        }
+
+        function handleFileSelect(event) {
+            selectedFile = event.target.files[0];
+            if (selectedFile) {
+                uploadArea.textContent = `Arquivo selecionado: ${selectedFile.name}`;
+            }
+        }
+
+        function handleDragOver(event) {
+            event.preventDefault();
+            uploadArea.classList.add('dragover');
+        }
+
+        function handleDragLeave(event) {
+            uploadArea.classList.remove('dragover');
+        }
+
+        function handleFileDrop(event) {
+            event.preventDefault();
+            uploadArea.classList.remove('dragover');
+            selectedFile = event.dataTransfer.files[0];
+            if (selectedFile) {
+                uploadArea.textContent = `Arquivo selecionado: ${selectedFile.name}`;
+            }
+        }
+
+        function resetModal() {
+            selectedFile = null;
+            uploadArea.textContent = 'Clique ou arraste o arquivo aqui para fazer upload.';
+            document.getElementById('postDescription').value = '';
+        }
+
+        function submitPost() {
+    if (!selectedFile) {
+        alert('Por favor, selecione um arquivo antes de postar.');
+        return;
+    }
+
+    const description = document.getElementById('postDescription').value.trim();
+    const postElement = document.createElement('div');
+    postElement.classList.add('post');
+
+    if (selectedFile.type.startsWith('image/')) {
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(selectedFile);
+        postElement.appendChild(img);
+    } else if (selectedFile.type.startsWith('video/')) {
+        const video = document.createElement('video');
+        video.src = URL.createObjectURL(selectedFile);
+        video.controls = true;
+        postElement.appendChild(video);
+    } else {
+        alert('Formato de arquivo não suportado. Por favor, envie imagens ou vídeos.');
+        return;
+    }
+
+    const descriptionElement = document.createElement('p');
+    descriptionElement.textContent = `@${loggedInUser}: ${description}`;
+    descriptionElement.classList.add('description');
+    postElement.appendChild(descriptionElement);
+
+    const actionsContainer = document.createElement('div');
+    actionsContainer.classList.add('post-actions');
+    const likeButton = document.createElement('button');
+    likeButton.textContent = '❤️';
+    likeButton.classList.add('like-button');
+    likeButton.onclick = () => {
+        likeButton.textContent = '❤️';
+        likeButton.style.backgroundColor = '#ffacac';
+    };
+    actionsContainer.appendChild(likeButton);
+
+    // Adiciona opção de exclusão se for administrador
+    if (loggedInUser === "admin") {
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = '🗑️';
+        deleteButton.classList.add('delete-button');
+        deleteButton.onclick = () => {
+            postElement.remove();
+        };
+        actionsContainer.appendChild(deleteButton);
+
+        const banButton = document.createElement('button');
+        banButton.textContent = '🚫';
+        banButton.classList.add('ban-button');
+        banButton.onclick = () => {
+            const usernameToBan = prompt("Digite o nome do usuário para banir:");
+            const userToBan = users.find(user => user.username === usernameToBan);
+            if (userToBan && usernameToBan !== "admin") {
+                userToBan.banned = true;
+                alert(`${usernameToBan} foi banido.`);
+            } else {
+                alert("Não é possível banir este usuário ou usuário não encontrado.");
+            }
+        };
+        actionsContainer.appendChild(banButton);
+    }
+
+    postElement.appendChild(actionsContainer);
+
+    const noPostsText = appContent.querySelector('.no-posts');
+    if (noPostsText) {
+        noPostsText.style.display = 'none';
+    }
+
+    appContent.prepend(postElement);
+    closePostModal();
+}
+
+        function toggleLogin() {
+        registerContainer.classList.remove('active');
+        loginContainer.classList.add('active');
+        appContent.classList.remove('active');
+    }
+
+    function toggleRegister() {
+        loginContainer.classList.remove('active');
+        registerContainer.classList.add('active');
+        appContent.classList.remove('active');
+    }
+
+    
+    function login() {
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value.trim();
+
+        const user = users.find(u => u.username === username && u.password === password);
+
+        if (user) {
+            if (user.banned) {
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('bannedScreen').style.display = 'flex';
+                return;
+            }
+
+            loggedInUser = username;
+            appContent.classList.add('active');
+            loginContainer.classList.remove('active');
+            loginError.textContent = "";
+        } else {
+            loginError.textContent = "Usuário ou senha incorretos!";
+        }
+    }
+    
+        function register() {
+            const regUsername = document.getElementById('regUsername').value.trim();
+            const regPassword = document.getElementById('regPassword').value.trim();
+            const confirmPassword = document.getElementById('confirmPassword').value.trim();
+            const registerError = document.getElementById('registerError');
+    
+            if (!regUsername || !regPassword) {
+                registerError.textContent = "Todos os campos são obrigatórios.";
+                return;
+            }
+    
+            if (regPassword !== confirmPassword) {
+                registerError.textContent = "As senhas não coincidem.";
+                return;
+            }
+    
+            // Adiciona o novo usuário
+            users.push({ username: regUsername, password: regPassword });
+            toggleLogin();
+            registerError.textContent = "";
+            alert("Usuário registrado com sucesso!");
+        }
+    
+        function toggleChat() {
+            chatModal.classList.toggle('active');
+        }
+    
+        function sendChat() {
+        const input = document.getElementById('chatInput');
+        if (input.value.trim()) {
+            const userMessage = document.createElement('div');
+            userMessage.textContent = input.value.trim();
+            userMessage.classList.add('chat-message', 'user');
+            chatMessages.appendChild(userMessage);
+
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Analisar palavras-chave e responder
+            const response = analyzeMessage(input.value.trim().toLowerCase());
+            const systemMessage = document.createElement('div');
+            systemMessage.textContent = response;
+            systemMessage.classList.add('chat-message', 'system');
+            chatMessages.appendChild(systemMessage);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            input.value = '';
+        }
+    }
+    
+        function analyzeMessage(message) {
+            // Verifica se alguma palavra-chave está presente
+            for (const [keyword, response] of Object.entries(keywords)) {
+                if (message.includes(keyword)) {
+                    return response;
+                }
+            }
+    
+            // Caso nenhuma palavra-chave seja encontrada
+            return "Edna: Desculpe, não entendi sua solicitação. Deseja que eu transfira você para um atendente humano? Responda com 'sim' ou 'não'.";
+        }
+    
+        // Lógica para transferir atendimento
+        function transferToAgent() {
+            const systemMessage = document.createElement('div');
+            systemMessage.textContent = "Edna: Aguarde, estamos transferindo você para um atendente humano...";
+            systemMessage.classList.add('chat-message', 'system');
+            chatMessages.appendChild(systemMessage);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    
+        document.getElementById('chatInput').addEventListener('keypress', (e) => {
+            if (e.key === "Enter") {
+                sendChat();
+            }
+        });
+        
+    </script>
